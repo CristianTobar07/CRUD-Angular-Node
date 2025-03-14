@@ -1,0 +1,40 @@
+<app-task-form [task]="selectedTask" (closeForm)="closeForm()"></app-task-form>
+
+<br />
+<hr />
+
+<h1>Listado de tareas</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Title</th>
+      <th>Description</th>
+      <th>Status</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let task of tasks$ | async">
+      <td>{{ task.id }}</td>
+      <td>{{ task.title }}</td>
+      <td>{{ task.description }}</td>
+      <td>
+        <select (change)="updateStatus(task, $event)">
+          <option
+            *ngFor="let status of statuses"
+            [value]="status"
+            [selected]="task.status === status"
+          >
+            {{ status }}
+          </option>
+        </select>
+      </td>
+      <td>
+        <button (click)="editTask(task)">Edit</button>
+        <button (click)="deleteTask(task.id)">Delete</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
