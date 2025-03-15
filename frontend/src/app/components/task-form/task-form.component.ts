@@ -1,10 +1,23 @@
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  Component,
+  EventEmitter,
+  inject,
+  Input,
+  OnInit,
+  Output,
+} from '@angular/core';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import {
   Task,
   TaskService,
   TaskStatus,
 } from '../../services/task/task.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-task-form',
@@ -12,41 +25,38 @@ import {
   templateUrl: './task-form.component.html',
   styleUrl: './task-form.component.scss',
 })
-export class TaskFormComponent {
-  @Input() task: Task | null = null;
+export class TaskFormComponent implements OnInit {
   @Output() closeForm = new EventEmitter<void>();
 
-  fb = inject(FormBuilder);
-  taskForm = this.fb.group({
-    id: [null as number | null],
-    title: ['', Validators.required],
-    description: ['', Validators.required],
-    status: ['Pendiente' as TaskStatus],
-  });
+  taskForm: FormGroup;
+  selectedTask$: Observable<any>;
 
-  statuses: TaskStatus[] = ['Pendiente', 'En curso', 'Terminado'];
+  constructor(private fb: FormBuilder, private taskService: TaskService) {
+    this.taskForm = this.fb.group({
+      title: ['', Validators.required],
+      description: ['', Validators.required],
+      status: ['Pendiente', Validators.required],
+    });
 
-  constructor(private taskService: TaskService) {}
-
-  ngOnChanges() {
-    if (this.task) {
-      this.taskForm.patchValue(this.task);
-    } else {
-      this.taskForm.reset({ status: 'Pendiente' });
-    }
+    this.selectedTask$ = this.taskService.getSelectedTask();
   }
 
-  submit() {
-    if (this.taskForm.valid) {
-      const formValue = this.taskForm.value;
-
-      if (this.task) {
-        this.taskService.updateTask({ id: this.task.id, ...formValue } as Task);
-      } else {
-        this.taskService.addTask({ ...formValue, id: Date.now() } as Task);
+  ngOnInit(): void {
+    this.selectedTask$.subscribe((task) => {
+      if (task) {
+        this.taskForm.patchValue({
+          title: task.title,
+          description: task.description,
+          status: task.status || 'Pendiente',
+        });
       }
+    });
+  }
 
-      this.taskForm.reset({ status: 'Pendiente' });
+  submit(): void {
+    if (this.taskForm.valid) {
+      const updatedTask = { ...this.taskForm.value };
+      this.taskService.updateTask(updatedTask);
       this.closeForm.emit();
     }
   }

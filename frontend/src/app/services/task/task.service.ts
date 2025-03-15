@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 export type TaskStatus = 'Pendiente' | 'En curso' | 'Terminado';
 
@@ -14,39 +14,58 @@ export interface Task {
   providedIn: 'root',
 })
 export class TaskService {
-  private tasks = new BehaviorSubject<Task[]>([
-    {
-      id: 1,
-      title: 'Buy groceries',
-      description: 'Milk, Bread, Cheese',
-      status: 'Pendiente',
-    },
-    {
-      id: 2,
-      title: 'Complete project',
-      description: 'Finish Angular CRUD app',
-      status: 'En curso',
-    },
-  ]);
-  tasks$ = this.tasks.asObservable();
+  private tasksSubject = new BehaviorSubject<Task[]>([]);
+  private selectedTaskSubject = new BehaviorSubject<any | null>(null);
+
+  constructor() {
+    // 📌 Inicializar con algunas tareas de prueba
+    this.tasksSubject.next([
+      {
+        id: 1,
+        title: 'Tarea 1',
+        description: 'Descripción 1',
+        status: 'Pendiente',
+      },
+      {
+        id: 2,
+        title: 'Tarea 2',
+        description: 'Descripción 2',
+        status: 'En curso',
+      },
+    ]);
+  }
+
+  getAllTasks(): Observable<any[]> {
+    return this.tasksSubject.asObservable();
+  }
+
+  setSelectedTask(task: Task): void {
+    this.selectedTaskSubject.next(task);
+  }
+
+  getSelectedTask(): Observable<Task> {
+    return this.selectedTaskSubject.asObservable();
+  }
 
   addTask(task: Task) {
-    const currentTasks = this.tasks.value;
-    this.tasks.next([
+    const currentTasks = this.tasksSubject.value;
+    this.tasksSubject.next([
       ...currentTasks,
       { ...task, id: currentTasks.length + 1 },
     ]);
   }
 
   updateTask(updatedTask: Task) {
-    this.tasks.next(
-      this.tasks.value.map((task) =>
+    this.tasksSubject.next(
+      this.tasksSubject.value.map((task) =>
         task.id === updatedTask.id ? updatedTask : task
       )
     );
   }
 
   deleteTask(id: number) {
-    this.tasks.next(this.tasks.value.filter((task: Task) => task.id !== id));
+    this.tasksSubject.next(
+      this.tasksSubject.value.filter((task: Task) => task.id !== id)
+    );
   }
 }

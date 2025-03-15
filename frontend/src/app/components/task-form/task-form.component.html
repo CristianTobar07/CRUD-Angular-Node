@@ -1,9 +1,18 @@
-<h1>Formulario para agregar o editar tareas</h1>
-<form [formGroup]="taskForm" (ngSubmit)="submit()">
-  <label>Title</label>
-  <input type="text" formControlName="title" />
-  <label>Description</label>
-  <input type="text" formControlName="description" />
-  <button type="submit">Save</button>
-  <button type="button" (click)="closeForm.emit()">Cancel</button>
-</form>
+<div class="form-container">
+  <form [formGroup]="taskForm" (ngSubmit)="submit()">
+    <label for="title">Título</label>
+    <input id="title" type="text" formControlName="title" required />
+
+    <label for="description">Descripción</label>
+    <textarea
+      id="description"
+      formControlName="description"
+      required
+    ></textarea>
+
+    <button type="submit">Guardar</button>
+    <button type="button" class="cancel" (click)="closeForm.emit()">
+      Cancelar
+    </button>
+  </form>
+</div>

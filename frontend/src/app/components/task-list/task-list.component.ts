@@ -1,21 +1,21 @@
-import { Component, inject, signal, Signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import {
   Task,
   TaskService,
   TaskStatus,
 } from '../../services/task/task.service';
 import { AsyncPipe, NgFor } from '@angular/common';
-import { TaskFormComponent } from '../task-form/task-form.component';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-task-list',
-  imports: [NgFor, AsyncPipe, TaskFormComponent],
+  imports: [NgFor, AsyncPipe],
   templateUrl: './task-list.component.html',
   styleUrl: './task-list.component.scss',
 })
 export class TaskListComponent {
   taskService = inject(TaskService);
-  tasks$ = this.taskService.tasks$;
+  tasks$ = this.taskService.getAllTasks();
   selectedTask: Task | null = null;
   isAddTask = signal<boolean>(false);
 
@@ -28,7 +28,7 @@ export class TaskListComponent {
   }
 
   editTask(task: Task) {
-    this.selectedTask = { ...task };
+    this.taskService.setSelectedTask(task);
   }
 
   deleteTask(id: number) {
