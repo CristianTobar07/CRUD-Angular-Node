@@ -1,27 +1,39 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import {
-  Task,
-  TaskService,
-  TaskStatus,
-} from '../../services/task/task.service';
-import { AsyncPipe, NgFor } from '@angular/common';
-import { Observable } from 'rxjs';
+import { TaskService } from '../../services/task/task.service';
+import { NgFor } from '@angular/common';
+import { Task } from '../../interfaces/task';
+import { StatusTaskPipe } from '../../pipes/tasks/status.pipe';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-task-list',
-  imports: [NgFor, AsyncPipe],
+  imports: [NgFor, StatusTaskPipe, FormsModule],
   templateUrl: './task-list.component.html',
   styleUrl: './task-list.component.scss',
 })
-export class TaskListComponent {
+export class TaskListComponent implements OnInit {
   taskService = inject(TaskService);
-  tasks$ = this.taskService.getAllTasks();
+  dataTasks: Task[] = [];
   selectedTask: Task | null = null;
   isAddTask = signal<boolean>(false);
 
-  statuses: TaskStatus[] = ['Pendiente', 'En curso', 'Terminado'];
+  statuses = [1, 2, 3];
 
-  constructor() {}
+  constructor() {
+    this.taskService.getSelectedTask().subscribe((task) => {
+      this.selectedTask = task;
+    });
+  }
+
+  ngOnInit(): void {
+    this.getAllTask();
+  }
+
+  getAllTask() {
+    this.taskService.getAllTasks().subscribe((tasks) => {
+      this.dataTasks = tasks;
+    });
+  }
 
   addTask() {
     this.isAddTask.set(true);
@@ -31,21 +43,22 @@ export class TaskListComponent {
     this.taskService.setSelectedTask(task);
   }
 
-  deleteTask(id: number) {
-    this.taskService.deleteTask(id);
-    if (this.selectedTask?.id === id) {
-      this.closeForm();
-    }
+  deleteTask(id: string) {
+    this.taskService.deleteTask(id).subscribe((res) => {
+      if (!res) return;
+      this.getAllTask();
+    });
   }
 
   updateStatus(task: Task, event: Event) {
     const target = event.target as HTMLSelectElement;
-    if (target && target.value) {
-      this.taskService.updateTask({
-        ...task,
-        status: target.value as TaskStatus,
-      });
-    }
+
+    this.taskService.updateTask(
+      task.name,
+      task.description,
+      +target.value,
+      task.uid
+    );
   }
 
   closeForm() {
