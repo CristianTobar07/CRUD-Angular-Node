@@ -9,7 +9,7 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   width: 100%;
   min-width: 350px;
-  margin-bottom: 2rem; /* 📌 Agregar margen abajo */
+  margin-bottom: 2rem; 
 }
 
 .header-content {
@@ -33,7 +33,6 @@ h1 {
   color: #ffd700;
 }
 
-/* 📌 Ajuste para móviles */
 @media (max-width: 768px) {
   h1 {
     font-size: 1.5rem;

@@ -9,7 +9,6 @@
   justify-content: center;
 }
 
-/* 📌 Ajustar el tamaño del formulario */
 form {
   display: flex;
   flex-direction: column;
@@ -68,7 +67,6 @@ button.cancel {
   }
 }
 
-/* 📌 Ajustes en móviles */
 @media (max-width: 768px) {
   form {
     padding: 1rem;

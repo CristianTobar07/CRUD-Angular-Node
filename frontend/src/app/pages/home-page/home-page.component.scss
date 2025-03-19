@@ -12,7 +12,6 @@
   align-items: center;
 }
 
-/* 📌 Contenedor principal con Flexbox */
 .container_form_table {
   display: flex;
   flex-wrap: wrap;
@@ -21,14 +20,12 @@
   width: 100%;
 }
 
-/* 📌 Formularios y tabla con flex y porcentajes */
 .form-container,
 .table-container {
   flex: 1;
   min-width: 45%;
 }
 
-/* 📌 Ajustes en móviles */
 @media (max-width: 768px) {
   .home-container {
     padding: 0 10px;
