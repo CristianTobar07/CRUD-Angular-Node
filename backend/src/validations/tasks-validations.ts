@@ -8,8 +8,3 @@ export const tasksValidations = [
     "El estado de la tarea es obligatorio es obligatorio"
   ).notEmpty(),
 ];
-
-export const tasksValidationsUpdate = [
-  ...tasksValidations,
-  check("uid", "El Id de la tarea es obligatorio").notEmpty(),
-];
